@@ -13,6 +13,10 @@
 
   <ItemGroup>
     <Content Include="clock-icon.ico" />
+    <!-- Rozvrh zvonění a zvuky se kopírují k exe; bez ringing.txt se položky Zvonění a Odpočet Zvonění v menu nezobrazí -->
+    <None Update="ringing.txt" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="bell.wav" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="ding.wav" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

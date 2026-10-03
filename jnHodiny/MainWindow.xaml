@@ -1,47 +1,62 @@
-﻿<Window x:Class="jnHodiny.MainWindow"
+<Window x:Class="jnHodiny.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:jnHodiny"
         mc:Ignorable="d"
-        Title="jnHodiny"
+        Title="jn Hodiny"
         WindowStartupLocation="Manual"
         Left="100" Top="100" WindowStyle="None"
         Topmost="True"
         AllowsTransparency="True"
         Background="Transparent"
         ShowInTaskbar="False"
-        Closing="Window_Closing">
+        Loaded="Window_Loaded"
+        Closing="Window_Closing"
+        LocationChanged="Window_LocationChanged"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        MouseLeftButtonUp="Window_MouseLeftButtonUp"
+        MouseMove="Window_MouseMove"
+        MouseWheel="Window_MouseWheel">
 
     <Window.ContextMenu>
         <ContextMenu x:Name="MainContextMenu">
             <MenuItem Header="Zavřít" Click="Close_Click"/>
-            <MenuItem x:Name="VisibilityMenuItem" Header="Zobrazit/Skrýt" Click="ToggleWindowVisibility_Click"/>
+            <MenuItem Header="Zobrazit/Skrýt" Click="ToggleWindowVisibility_Click"/>
             <Separator/>
-            <MenuItem x:Name="TimeFormatMenuItem" Header="Formát času HH:MM" IsCheckable="True"/>
-            <MenuItem x:Name="Time24hMenuItem" Header="24h formát" IsCheckable="True"/>
-            <MenuItem x:Name="BellMenuItem" Header="Zvonění" IsCheckable="True" Visibility="Collapsed"/>
-            <MenuItem x:Name="CountdownBellMenuItem" Header="Odpočet Zvonění" IsCheckable="True" Visibility="Collapsed"/>
-            <MenuItem x:Name="TransparentBackgroundMenuItem" Header="Průhledné pozadí" IsCheckable="True" Click="TransparentBackground_Click"/>
-            <MenuItem x:Name="TransparentTextMenuItem" Header="Průhledný text" IsCheckable="True" Click="TransparentText_Click"/>
+            <MenuItem x:Name="TimeFormatMenuItem" Header="Formát času HH:MM" IsCheckable="True"
+                      Checked="Option_Changed" Unchecked="Option_Changed"/>
+            <MenuItem x:Name="Time24hMenuItem" Header="24h formát" IsCheckable="True"
+                      Checked="Option_Changed" Unchecked="Option_Changed"/>
+            <MenuItem x:Name="BellMenuItem" Header="Zvonění" IsCheckable="True" Visibility="Collapsed"
+                      Checked="Option_Changed" Unchecked="Option_Changed"/>
+            <MenuItem x:Name="FiveMinuteMenuItem" Header="5 minut" IsCheckable="True" Visibility="Collapsed"
+                      Checked="Option_Changed" Unchecked="Option_Changed"/>
+            <MenuItem x:Name="CountdownBellMenuItem" Header="Odpočet Zvonění" IsCheckable="True" Visibility="Collapsed"
+                      Checked="Option_Changed" Unchecked="Option_Changed"/>
+            <MenuItem x:Name="TransparentBackgroundMenuItem" Header="Průhledné pozadí" IsCheckable="True"
+                      Checked="Option_Changed" Unchecked="Option_Changed"/>
+            <MenuItem x:Name="TransparentTextMenuItem" Header="Průhledný text" IsCheckable="True"
+                      Checked="Option_Changed" Unchecked="Option_Changed"/>
             <Separator/>
             <MenuItem Header="Výchozí zobrazení" Click="DefaultView_Click"/>
             <MenuItem Header="Nápověda" Click="Help_Click"/>
         </ContextMenu>
     </Window.ContextMenu>
 
-    <Border x:Name="MainBorder" 
-            Background="White" 
+    <Border x:Name="MainBorder"
+            Background="White"
             CornerRadius="30"
             BorderThickness="0"
             SnapsToDevicePixels="True">
         <Grid x:Name="MainGrid" Margin="5">
-            <TextBlock x:Name="TimeTextBlock" 
-                       Text="00:00:00" 
-                       FontSize="40" 
-                       FontWeight="Bold" 
-                       Foreground="Black" 
+            <TextBlock x:Name="TimeTextBlock"
+                       Text="00:00:00"
+                       FontFamily="Arial Black"
+                       FontSize="40"
+                       FontWeight="Bold"
+                       Foreground="Black"
                        Background="Transparent"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"/>
