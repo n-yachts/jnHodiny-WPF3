@@ -14,25 +14,29 @@ namespace jnHodiny.Display
     /// </summary>
     public static class TextMask
     {
-        public static Brush Create(string text, Typeface typeface, double fontSize, Size windowSize,
-            double cornerRadius, double pixelsPerDip)
+        /// <summary>Jeden text masky: obsah, písmo, velikost a levý horní roh v souřadnicích okna.</summary>
+        public record Item(string Text, Typeface Typeface, double FontSize, Point Origin);
+
+        public static Brush Create(IEnumerable<Item> items, Size windowSize, double cornerRadius, double pixelsPerDip)
         {
             var windowGeometry = new RectangleGeometry(
                 new Rect(0, 0, windowSize.Width, windowSize.Height), cornerRadius, cornerRadius);
 
-            var formattedText = new FormattedText(
-                text,
-                CultureInfo.CurrentCulture,
-                System.Windows.FlowDirection.LeftToRight,
-                typeface,
-                fontSize,
-                Brushes.Black,
-                pixelsPerDip);
+            Geometry textGeometry = Geometry.Empty;
+            foreach (var item in items)
+            {
+                var formattedText = new FormattedText(
+                    item.Text,
+                    CultureInfo.CurrentCulture,
+                    System.Windows.FlowDirection.LeftToRight,
+                    item.Typeface,
+                    item.FontSize,
+                    Brushes.Black,
+                    pixelsPerDip);
 
-            // Text je v okně vystředěný
-            Geometry textGeometry = formattedText.BuildGeometry(new Point(
-                (windowSize.Width - formattedText.Width) / 2,
-                (windowSize.Height - formattedText.Height) / 2));
+                textGeometry = new CombinedGeometry(GeometryCombineMode.Union, textGeometry,
+                    formattedText.BuildGeometry(item.Origin));
+            }
 
             var combined = new CombinedGeometry(GeometryCombineMode.Exclude, windowGeometry, textGeometry);
 

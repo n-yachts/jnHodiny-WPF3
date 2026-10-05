@@ -93,7 +93,12 @@ namespace jnHodiny
         private void ApplyAppearance()
         {
             TimeTextBlock.FontSize = _settings.FontSize;
-            TimeTextBlock.Foreground = new SolidColorBrush(_settings.TransparentText ? Colors.Transparent : _settings.TextColor);
+            var textBrush = new SolidColorBrush(_settings.TransparentText ? Colors.Transparent : _settings.TextColor);
+            TimeTextBlock.Foreground = textBrush;
+            BellTextBlock.Foreground = textBrush;
+            FiveTextBlock.Foreground = textBrush;
+            BellTextBlock.FontSize = _settings.FontSize * 0.45;
+            FiveTextBlock.FontSize = _settings.FontSize * 0.35;
             MainBorder.Background = new SolidColorBrush(_settings.TransparentBackground ? Colors.Transparent : _settings.BackgroundColor);
             Opacity = _settings.Opacity;
             _lastMaskKey = ""; // vzhled se změnil, maska se musí přepočítat
@@ -205,8 +210,17 @@ namespace jnHodiny
             }
 
             TimeTextBlock.Text = text;
+            UpdateBellIndicator();
             UpdateWindowSize();
             UpdateTextMask();
+        }
+
+        // Zvonek se zobrazuje při zapnutém zvonění, "-5" pod ním při zapnutém upozornění 5 minut
+        private void UpdateBellIndicator()
+        {
+            bool bell = _settings.BellEnabled && !_schedule.IsEmpty;
+            BellPanel.Visibility = bell ? Visibility.Visible : Visibility.Collapsed;
+            FiveTextBlock.Visibility = bell && _settings.FiveMinuteWarning ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private Typeface CurrentTypeface => new(TimeTextBlock.FontFamily, TimeTextBlock.FontStyle,
@@ -224,8 +238,11 @@ namespace jnHodiny
                 VisualTreeHelper.GetDpi(this).PixelsPerDip);
 
             // Zaoblené rohy ubírají okraji místo, proto se šířka s poloměrem zvětšuje
-            double width = formatted.Width * ((_settings.CornerRadius / 7 + 100) / 100) + 10;
-            double height = formatted.Height + 20;
+            BellPanel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            bool bell = BellPanel.Visibility == Visibility.Visible;
+            double bellWidth = bell ? BellPanel.DesiredSize.Width + BellPanel.Margin.Left + BellPanel.Margin.Right : 0;
+            double width = formatted.Width * ((_settings.CornerRadius / 7 + 100) / 100) + 10 + bellWidth;
+            double height = Math.Max(formatted.Height, bell ? BellPanel.DesiredSize.Height : 0) + 20;
 
             if (Math.Abs(width - ActualWidth) > 0.5 || Math.Abs(height - ActualHeight) > 0.5)
             {
@@ -257,18 +274,30 @@ namespace jnHodiny
                 return;
             }
 
-            string key = $"{TimeTextBlock.Text}|{TimeTextBlock.FontSize}|{ActualWidth}|{ActualHeight}|{MainBorder.CornerRadius.TopLeft}";
+            string key = $"{TimeTextBlock.Text}|{BellPanel.Visibility}|{FiveTextBlock.Visibility}|{TimeTextBlock.FontSize}|{ActualWidth}|{ActualHeight}|{MainBorder.CornerRadius.TopLeft}";
             if (key == _lastMaskKey && OpacityMask != null) return;
             _lastMaskKey = key;
 
+            UpdateLayout(); // polohy textů se berou z aktuálního rozvržení
+            var items = new List<TextMask.Item> { MaskItem(TimeTextBlock, CurrentTypeface) };
+            if (BellPanel.Visibility == Visibility.Visible)
+            {
+                items.Add(MaskItem(BellTextBlock, PlainTypeface(BellTextBlock)));
+                if (FiveTextBlock.Visibility == Visibility.Visible) items.Add(MaskItem(FiveTextBlock, PlainTypeface(FiveTextBlock)));
+            }
+
             OpacityMask = TextMask.Create(
-                TimeTextBlock.Text,
-                CurrentTypeface,
-                TimeTextBlock.FontSize,
+                items,
                 new Size(ActualWidth, ActualHeight),
                 MainBorder.CornerRadius.TopLeft,
                 VisualTreeHelper.GetDpi(this).PixelsPerDip);
         }
+
+        private static Typeface PlainTypeface(System.Windows.Controls.TextBlock block) =>
+            new(block.FontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+
+        private TextMask.Item MaskItem(System.Windows.Controls.TextBlock block, Typeface typeface) =>
+            new(block.Text, typeface, block.FontSize, block.TranslatePoint(new Point(0, 0), this));
 
         // ---------------------------------------------------------------------------------------
         // Přichycení k okrajům a přetahování
