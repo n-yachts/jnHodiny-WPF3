@@ -50,9 +50,9 @@
             CornerRadius="30"
             BorderThickness="0"
             SnapsToDevicePixels="True">
-        <Grid x:Name="MainGrid" Margin="5">
+        <Grid x:Name="MainGrid" Margin="5" HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <TextBlock x:Name="TimeTextBlock"
