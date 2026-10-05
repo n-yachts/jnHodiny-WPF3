@@ -441,19 +441,9 @@ namespace jnHodiny
 
         private void Help_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(
-                "Nápověda k aplikaci jnHodiny\n\n" +
-                "• Přesouvání: Klikněte a táhněte levým tlačítkem myši\n" +
-                "• kolečko myši nastavuje velikost textu\n" +
-                "• Shift + kolečko myši nastavuje barvu textu\n" +
-                "• Ctrl + kolečko myši nastavuje barvu pozadí\n" +
-                "• Alt + kolečko myši nastavuje průhlednost aplikace\n" +
-                "• Ctrl + Shift + kolečko myši nastavuje zaoblení rohů\n" +
-                "• Kontextové menu: Pravé tlačítko myši\n" +
-                "• Automatické přichycení k okrajům obrazovky",
-                "Nápověda",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+            var help = new HelpWindow();
+            if (IsVisible) help.Owner = this;
+            help.ShowDialog();
         }
 
         // ---------------------------------------------------------------------------------------
