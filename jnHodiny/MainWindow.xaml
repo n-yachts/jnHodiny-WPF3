@@ -1,4 +1,4 @@
-<Window x:Class="jnHodiny.MainWindow"
+﻿<Window x:Class="jnHodiny.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -39,6 +39,8 @@
                       Checked="Option_Changed" Unchecked="Option_Changed"/>
             <MenuItem x:Name="TransparentTextMenuItem" Header="Průhledný text" IsCheckable="True"
                       Checked="Option_Changed" Unchecked="Option_Changed"/>
+            <MenuItem x:Name="AutostartMenuItem" Header="Spustit při startu" IsCheckable="True"
+                      Click="Autostart_Click"/>
             <Separator/>
             <MenuItem Header="Výchozí zobrazení" Click="DefaultView_Click"/>
             <MenuItem Header="Nápověda" Click="Help_Click"/>

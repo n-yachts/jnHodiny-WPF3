@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -9,6 +9,7 @@ using jnHodiny.Display;
 using jnHodiny.Ringing;
 using jnHodiny.Settings;
 using jnHodiny.Snapping;
+using jnHodiny.Startup;
 using jnHodiny.Tray;
 using Application = System.Windows.Application;
 using Brushes = System.Windows.Media.Brushes;
@@ -31,6 +32,8 @@ namespace jnHodiny
         private const double FontSizeStep = 2;
         private const double OpacityStep = 0.05;
         private const double CornerRadiusStep = 5;
+
+        private static readonly string AppDir = Path.GetDirectoryName(Environment.ProcessPath) ?? AppContext.BaseDirectory;
 
         private readonly RegistrySettingsStore _store = new();
         private readonly RingSchedule _schedule;
@@ -57,11 +60,12 @@ namespace jnHodiny
             InitializeComponent();
 
             _settings = _store.Load();
-            _schedule = RingSchedule.LoadFromFile(Path.Combine(AppContext.BaseDirectory, "ringing.txt"));
-            _bells = new BellPlayer(AppContext.BaseDirectory);
+            _schedule = RingSchedule.LoadFromFile(Path.Combine(AppDir, "ringing.txt"));
+            _bells = new BellPlayer(AppDir);
 
             RestorePosition();
             ApplySettings();
+            AutostartMenuItem.IsChecked = AutostartManager.IsEnabled();
 
             _tray = new TrayIcon(Title, MainContextMenu, ToggleWindowVisibility);
 
@@ -429,6 +433,20 @@ namespace jnHodiny
             _updatingMenu = true;
             item.IsChecked = value;
             _updatingMenu = false;
+        }
+
+        private void Autostart_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                AutostartManager.SetEnabled(AutostartMenuItem.IsChecked);
+            }
+            catch (Exception ex)
+            {
+                AutostartMenuItem.IsChecked = AutostartManager.IsEnabled();
+                MessageBox.Show(this, $"Nepodařilo se změnit spouštění při startu: {ex.Message}", Title,
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void DefaultView_Click(object sender, RoutedEventArgs e)
